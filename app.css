@@ -5,3 +5,8 @@
 span {
     font-style: italic;
 }
+
+#pane {
+    margin: 0 auto;
+    display: block;
+}
