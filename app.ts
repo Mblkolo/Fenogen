@@ -6,7 +6,7 @@
     let height = el.height;
     // context.strokeRect(0, 0, width, height);
 
-    let g = new Generator(10, 50);
+    let g = new Generator(12, 10);
     let r = new Render(g, context);
     r.draw();
 };
@@ -22,16 +22,22 @@ enum HubType {
 class Render {
 
     draw() {
-        this._context.lineWidth = 2;
+        // const cw = 16;
+        // const ch = 30;
+
+        this._context.translate(0.5, 0.5);
 
         let h = this._generator.height;
+        let w = this._generator.width;
 
         for (let y = 0; y < h; ++y) {
-            let w = this._generator.getRowWidht(y);
-            let offset = (y % 2) * 6;
-
             for (let x = 0; x < w; ++x) {
-                this._context.strokeRect(x * 12 + offset, y * 5, 6, 10);
+                if ((x + y) % 2 === 1) {
+                    continue;
+                }
+
+                this._drawThreads(x, y);
+                this._drawHub(x, y);
             }
         }
 
@@ -44,6 +50,57 @@ class Render {
 
     private _generator: Generator;
     private _context: CanvasRenderingContext2D;
+
+    private _step: number = 31;
+
+
+    private _drawThreads(x: number, y: number) {
+        let ctx = this._context;
+        let step = this._step;
+        const size = 6;
+
+        let y1 = y + 1;
+        let x1 = x + 1;
+        let x_1 = x - 1;
+        let vstep = (step);
+
+        ctx.beginPath();
+        ctx.moveTo(x * step, y * vstep - size);
+        ctx.lineTo(x1 * step, y1 * vstep - size);
+        ctx.lineTo(x1 * step, y1 * vstep + size);
+        ctx.lineTo(x * step, y * vstep + size);
+        ctx.lineTo(x * step, y * vstep - size);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x * step, y * vstep - size);
+        ctx.lineTo(x_1 * step, y1 * vstep - size);
+        ctx.lineTo(x_1 * step, y1 * vstep + size);
+        ctx.lineTo(x * step, y * vstep + size);
+        ctx.lineTo(x * step, y * vstep - size);
+        ctx.stroke();
+
+        // ctx.stroke();
+    }
+
+    private _drawHub(x: number, y: number) {
+        let ctx = this._context;
+        let step = this._step;
+        const size = 6;
+
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(
+            x * step - size - 1,
+            y * step - size * 2 - 1,
+            size * 2 + 2,
+            4 * size + 2);
+
+        ctx.strokeRect(
+            x * step - size - 1,
+            y * step - size * 2 - 1,
+            size * 2 + 2,
+            4 * size + 2);
+    }
 }
 
 

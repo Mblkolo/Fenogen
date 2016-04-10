@@ -4,7 +4,7 @@ window.onload = function () {
     var width = el.width;
     var height = el.height;
     // context.strokeRect(0, 0, width, height);
-    var g = new Generator(10, 50);
+    var g = new Generator(12, 10);
     var r = new Render(g, context);
     r.draw();
 };
@@ -17,19 +17,57 @@ var HubType;
 })(HubType || (HubType = {}));
 var Render = (function () {
     function Render(generator, context) {
+        this._step = 31;
         this._generator = generator;
         this._context = context;
     }
     Render.prototype.draw = function () {
-        this._context.lineWidth = 2;
+        // const cw = 16;
+        // const ch = 30;
+        this._context.translate(0.5, 0.5);
         var h = this._generator.height;
+        var w = this._generator.width;
         for (var y = 0; y < h; ++y) {
-            var w = this._generator.getRowWidht(y);
-            var offset = (y % 2) * 6;
             for (var x = 0; x < w; ++x) {
-                this._context.strokeRect(x * 12 + offset, y * 5, 6, 10);
+                if ((x + y) % 2 === 1) {
+                    continue;
+                }
+                this._drawThreads(x, y);
+                this._drawHub(x, y);
             }
         }
+    };
+    Render.prototype._drawThreads = function (x, y) {
+        var ctx = this._context;
+        var step = this._step;
+        var size = 6;
+        var y1 = y + 1;
+        var x1 = x + 1;
+        var x_1 = x - 1;
+        var vstep = (step);
+        ctx.beginPath();
+        ctx.moveTo(x * step, y * vstep - size);
+        ctx.lineTo(x1 * step, y1 * vstep - size);
+        ctx.lineTo(x1 * step, y1 * vstep + size);
+        ctx.lineTo(x * step, y * vstep + size);
+        ctx.lineTo(x * step, y * vstep - size);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x * step, y * vstep - size);
+        ctx.lineTo(x_1 * step, y1 * vstep - size);
+        ctx.lineTo(x_1 * step, y1 * vstep + size);
+        ctx.lineTo(x * step, y * vstep + size);
+        ctx.lineTo(x * step, y * vstep - size);
+        ctx.stroke();
+        // ctx.stroke();
+    };
+    Render.prototype._drawHub = function (x, y) {
+        var ctx = this._context;
+        var step = this._step;
+        var size = 6;
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(x * step - size - 1, y * step - size * 2 - 1, size * 2 + 2, 4 * size + 2);
+        ctx.strokeRect(x * step - size - 1, y * step - size * 2 - 1, size * 2 + 2, 4 * size + 2);
     };
     return Render;
 }());
