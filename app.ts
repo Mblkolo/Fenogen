@@ -32,11 +32,16 @@ class Render {
 
         for (let y = 0; y < h; ++y) {
             for (let x = 0; x < w; ++x) {
+                this._drawThreads(x, y);
+            }
+        }
+
+        for (let y = 0; y < h - 1; ++y) {
+            for (let x = 0; x < w - 1; ++x) {
                 if ((x + y) % 2 === 1) {
                     continue;
                 }
 
-                this._drawThreads(x, y);
                 this._drawHub(x, y);
             }
         }
@@ -55,32 +60,37 @@ class Render {
 
 
     private _drawThreads(x: number, y: number) {
+        let color = this._generator.getThreadNo(x, y);
         let ctx = this._context;
         let step = this._step;
         const size = 6;
 
-        let y1 = y + 1;
-        let x1 = x + 1;
-        let x_1 = x - 1;
-        let vstep = (step);
+        let y0 = (y + 0) * step - size;
+        let y1 = (y + 1) * step - size;
+        let y2 = (y + 1) * step + size;
+        let y3 = (y + 0) * step + size;
+
+        let x0: number, x1: number;
+        if ((x + y) % 2 === 0) {
+            x0 = (x + 0) * step;
+            x1 = (x + 1) * step;
+        }
+        else {
+            x0 = (x + 1) * step;
+            x1 = (x + 0) * step;
+        }
+
+        ctx.fillStyle = color;
 
         ctx.beginPath();
-        ctx.moveTo(x * step, y * vstep - size);
-        ctx.lineTo(x1 * step, y1 * vstep - size);
-        ctx.lineTo(x1 * step, y1 * vstep + size);
-        ctx.lineTo(x * step, y * vstep + size);
-        ctx.lineTo(x * step, y * vstep - size);
-        ctx.stroke();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.lineTo(x1, y2);
+        ctx.lineTo(x0, y3);
+        ctx.closePath();
 
-        ctx.beginPath();
-        ctx.moveTo(x * step, y * vstep - size);
-        ctx.lineTo(x_1 * step, y1 * vstep - size);
-        ctx.lineTo(x_1 * step, y1 * vstep + size);
-        ctx.lineTo(x * step, y * vstep + size);
-        ctx.lineTo(x * step, y * vstep - size);
+        ctx.fill();
         ctx.stroke();
-
-        // ctx.stroke();
     }
 
     private _drawHub(x: number, y: number) {
@@ -88,18 +98,38 @@ class Render {
         let step = this._step;
         const size = 6;
 
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = this._generator.getHubNo(x, y);
         ctx.fillRect(
-            x * step - size - 1,
-            y * step - size * 2 - 1,
+            (x + 1) * step - size - 1,
+            (y + 1) * step - size * 2 - 1,
             size * 2 + 2,
             4 * size + 2);
 
         ctx.strokeRect(
-            x * step - size - 1,
-            y * step - size * 2 - 1,
+            (x + 1) * step - size - 1,
+            (y + 1) * step - size * 2 - 1,
             size * 2 + 2,
             4 * size + 2);
+
+        let hubType = this._generator.getHubType(x, y);
+        ctx.beginPath();
+        if (hubType === HubType.LL && hubType === HubType.RL) {
+            ctx.moveTo((x + 1) * step - (size - 2), (y + 1) * step - (size - 2));
+        }
+        else {
+            ctx.moveTo((x + 1) * step + (size - 2), (y + 1) * step - (size - 2));
+        }
+
+        ctx.lineTo((x + 1) * step, (y + 1) * step);
+
+        if (hubType === HubType.LL && hubType === HubType.RL) {
+            ctx.lineTo((x + 1) * step - (size - 2), (y + 1) * step + (size - 2));
+        }
+        else {
+            ctx.lineTo((x + 1) * step + (size - 2), (y + 1) * step + (size - 2));
+        }
+
+        ctx.stroke();
     }
 }
 
@@ -110,7 +140,12 @@ class Generator {
 
     getHubType(x: number, y: number): HubType {
         this._validatePositon(x, y);
-        return this._field[y][x];
+        return HubType.LL;
+        //return this._field[y][x];
+    }
+
+    getHubNo(x: number, y: number): string {
+        return "#ded";
     }
 
     setHubType(x: number, y: number, hubType: HubType) {
@@ -118,25 +153,23 @@ class Generator {
         this._field[y][x] = hubType;
     }
 
-    getRowWidht(y: number): number {
-        if (y % 2 === 0) {
-            return this.width;
-        }
-
-        return this.width - 1;
+    getThreadNo(x: number, y: number): string {
+        return "#ddd";
     }
+
+
 
     constructor(width: number, heigth: number) {
         this.width = width;
         this.height = heigth;
-        this._createField();
+        //this._createField();
     }
 
     private _field: HubType[][];
 
     private _validatePositon(x: number, y: number) {
 
-        if (x < 0 || x >= this.getRowWidht(y)) {
+        if (x < 0 || x >= this.width) {
             throw new Error("Неверное задана ширина x");
         }
 
@@ -145,15 +178,15 @@ class Generator {
         }
     }
 
-    private _createField() {
-        this._field = [];
-        for (let y = 0; y < this.height; ++y) {
-            this._field.push([]);
-            let width = this.getRowWidht(y);
+    //private _createField() {
+    //    this._field = [];
+    //    for (let y = 0; y < this.height; ++y) {
+    //        this._field.push([]);
+    //        let width = this.getRowWidht(y);
 
-            for (let x = 0; x < width; ++x) {
-                this._field[y].push(HubType.LL);
-            }
-        }
-    }
+    //        for (let x = 0; x < width; ++x) {
+    //            this._field[y].push(HubType.LL);
+    //        }
+    //    }
+    //}
 }
