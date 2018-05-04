@@ -3,10 +3,10 @@ const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
-    entry: { app: './app.ts', },
+    entry: { app: './src/app.ts', },
     output: { filename: './app.js' },
     resolve: {
-        extensions: [".ts"]
+        extensions: [".ts", ".js"]
     },
     module: {
         rules: [

@@ -15,7 +15,7 @@
     },
     "scripts": {
         "build": "webpack --progress",
-        "start:dev": "cross-env webpack-dev-server --hot"
+        "start:dev": "webpack-dev-server --hot"
     },
     "dependencies": {}
 }
