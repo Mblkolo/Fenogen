@@ -113,7 +113,7 @@ class Render {
 
         let hubType = this._generator.getHubType(x, y);
         ctx.beginPath();
-        if (hubType === HubType.LL && hubType === HubType.RL) {
+        if (hubType === HubType.LL || hubType === HubType.RL) {
             ctx.moveTo((x + 1) * step - (size - 2), (y + 1) * step - (size - 2));
         }
         else {
@@ -122,7 +122,7 @@ class Render {
 
         ctx.lineTo((x + 1) * step, (y + 1) * step);
 
-        if (hubType === HubType.LL && hubType === HubType.RL) {
+        if (hubType === HubType.LL || hubType == HubType.RL) {
             ctx.lineTo((x + 1) * step - (size - 2), (y + 1) * step + (size - 2));
         }
         else {
@@ -165,7 +165,7 @@ class Generator {
         //this._createField();
     }
 
-    private _field: HubType[][];
+    private _field: HubType[][] = [];
 
     private _validatePositon(x: number, y: number) {
 

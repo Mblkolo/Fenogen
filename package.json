@@ -1,0 +1,21 @@
+{
+    "name": "fenogen",
+    "version": "0.0.1",
+    "description": "fenogen",
+    "main": "app.js",
+    "author": {
+        "name": "Mblkolo"
+    },
+    "devDependencies": {
+        "@types/node": "^6.0.87",
+        "ts-loader": "^3.5.0",
+        "typescript": "^2.8.3",
+        "webpack": "^3.10.0",
+        "webpack-dev-server": "^2.9.7"
+    },
+    "scripts": {
+        "build": "webpack --progress",
+        "start:dev": "cross-env webpack-dev-server --hot"
+    },
+    "dependencies": {}
+}
