@@ -22,13 +22,9 @@ export class Generator {
         return this._hubsField[y][x];
     }
 
-    getHubNo(x: number, y: number): string {
+    getHubNo(x: number, y: number): string | null {
         this._validateHubPositon(x, y);
-        const hubType = this._hubsField[y][x];
-        if(hubType === HubType.LL || hubType === HubType.LR)
-            return this._threadField[y][x];
-        else
-            return this._threadField[y][x+1];
+        return Generator.getHubColorByTopThreads(this._hubsField[y], this._threadField[y], x);
     }
 
     setHubType(x: number, y: number, hubType: HubType) {
@@ -40,6 +36,19 @@ export class Generator {
         return this._threadField[y][x];
     }
 
+    nextHubType(x: number, y: number) {
+        this._validateHubPositon(x, y);
+        
+        var a:  { [index: number] : HubType } = {};
+        a[HubType.None] = HubType.None;
+        a[HubType.RL] = HubType.LL;
+        a[HubType.LL] = HubType.LR;
+        a[HubType.LR] = HubType.RR;
+        a[HubType.RR] = HubType.RL;
+
+        this._hubsField[y][x] = a[this._hubsField[y][x]];
+        this.recalculateThreadColors();
+    }
 
     //Размеры задаются в хабах
     constructor(width: number, heigth: number) {
@@ -86,32 +95,72 @@ export class Generator {
 
     private recalculateThreadColors()
     {
-        console.log(this._hubsField);
         for (let y = 1; y < this.height + 1; ++y) {
-            for (let x = 0; x < this.width + 1; ++x) {
-                this._threadField[y][x] = this.getParentColor(x, y)
-            }
+            const hubRow = this._hubsField[y-1];
+            const threadRow = this._threadField[y-1];
+
+            this._threadField[y] = Generator.getNextThreadRow(threadRow, hubRow);
+            // for (let x = 0; x < this.width + 1; ++x) {
+            //     this._threadField[y][x] = Generator.getParentColor(threadRow, hubRow, x);
+            // }
         }
     }
 
-    private getParentColor(x: number, y: number) : string
+    private static getNextThreadRow(threadRow: string[], hubRow: HubType[]) {
+        return threadRow.map((_, index) => Generator.getParentColor(threadRow, hubRow, index));
+    }
+
+
+    private static getParentColor(threadRow: string[], hubRow: HubType[], x: number) : string
     {
         if(x > 0){
-            const leftTopHub = this.getHubType(x-1, y-1);
+            const leftTopHub = hubRow[x-1];
 
-            if(x == this.width)
-                console.log({leftTopHub, x, y});
             if(leftTopHub === HubType.LR || leftTopHub === HubType.RL)
-                 return this._threadField[y-1][x-1];
+                 return threadRow[x-1];
         }
 
-        if(x < this.width){
-            const rightTopHub = this.getHubType(x, y-1);
+        if(x < hubRow.length){
+            const rightTopHub = hubRow[x];
             if(rightTopHub === HubType.LR || rightTopHub === HubType.RL)
-                 return this._threadField[y-1][x+1];
+                 return threadRow[x+1];
         }
 
-        return this._threadField[y-1][x];
+        return threadRow[x];
+    }
+
+    private static getHubColorByTopThreads(hubRow: HubType[], threads: string[], hubNo: number) {
+        const hubType = hubRow[hubNo];
+        if(hubType === HubType.None)
+            return null;
+
+        if(hubType === HubType.LL || hubType === HubType.LR)
+            return threads[hubNo];
+        else
+            return threads[hubNo+1];
+    }
+
+    private static getThreadRowByTopThreads(hubRow: HubType[], threads: string[]) {
+
+    }
+
+    getHubPreview(length: number): (string | null) [][] {
+        let currentHubRow = this._hubsField[0];
+        let currentThreadsColors = this._threadField[0];
+
+        const result: (string|null)[][] = [];
+
+        for(let i=0; i<length; ++i) {
+            const hubRow = currentHubRow.map((hub, index) => {
+                return Generator.getHubColorByTopThreads(currentHubRow, currentThreadsColors, index)
+            });
+            result.push(hubRow);
+
+            currentThreadsColors = Generator.getNextThreadRow(currentThreadsColors, currentHubRow);
+            currentHubRow = this._hubsField[ (i+1) % this._hubsField.length];
+        }
+
+        return result;
     }
 }
 
