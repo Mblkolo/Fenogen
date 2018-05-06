@@ -16,7 +16,7 @@ export class PreviewRender {
 
     draw() {
         const ctx = this._context;
-        ctx.lineWidth = 1;
+        ctx.lineWidth =0.5;
 
         const  preview = this._generator.getHubPreview(30);
         for(let rowNo=0; rowNo<preview.length; ++ rowNo) {
@@ -33,8 +33,22 @@ export class PreviewRender {
 
                 // ctx.fill();
                 // ctx.stroke();
-                ctx.fillRect(hubNo * 6, rowNo * 5, 6, 10);
-                ctx.strokeRect(hubNo * 6, rowNo * 5, 6, 10);
+
+                // ctx.fillRect(hubNo * 6, rowNo * 5, 6, 10);
+                // ctx.strokeRect(hubNo * 6, rowNo * 5, 6, 10);
+
+                const size = 6;
+
+                ctx.beginPath();
+                ctx.moveTo(hubNo * size, rowNo * size);
+                ctx.lineTo(hubNo * size + size, rowNo * size + size)
+                ctx.lineTo(hubNo * size , rowNo * size + 2 * size)
+                ctx.lineTo(hubNo * size - size, rowNo * size + size)
+                ctx.closePath();
+
+                ctx.fill();
+                ctx.stroke();
+
             }
         }
     }

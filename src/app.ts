@@ -11,6 +11,7 @@ window.onload = () => {
     let height = el.height;
     context.strokeRect(0, 0, width, height);
     context.translate(0.5, 0.5);
+    context.strokeRect(0, 0, width, height);
 
     let g = new Generator(13, 10);
     let r = new EditorRender(g, context);
@@ -18,8 +19,10 @@ window.onload = () => {
     r.draw();
 
     //context.translate(-0.5, -0.5);
-    context.translate(380, 0);
+    context.translate(400, 0);
     pr.draw();
+    context.translate(-400, 0);
+    
 
     el.addEventListener('click', (e) => {
         console.log({offsetX: e.offsetX, step: r.step});
@@ -34,6 +37,10 @@ window.onload = () => {
         if(hub.x < g.width && hub.y < g.height) {
             g.nextHubType(hub.x, hub.y);
             r.draw();
+
+            context.translate(400, 0);
+            pr.draw();
+            context.translate(-400, 0);
         }
     })
 };
