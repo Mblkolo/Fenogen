@@ -1,7 +1,18 @@
 ﻿import {Generator, HubType } from './generator'
 import {EditorRender, PreviewRender} from './render';
+import * as $ from "jquery"
+
+require("spectrum-colorpicker")
+import "spectrum-colorpicker/spectrum.css";
+
+
 
 window.onload = () => {
+    
+    $("#colorpicker").spectrum({
+        color: "#f00"
+    });
+
     const el  = document.getElementById("pane") as HTMLCanvasElement;
     const context = el.getContext("2d");
     if(context === null)

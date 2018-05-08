@@ -7,7 +7,10 @@
         "name": "Mblkolo"
     },
     "devDependencies": {
+        "@types/jquery": "^3.3.1",
         "@types/node": "^6.0.87",
+        "css-loader": "^0.28.11",
+        "style-loader": "^0.21.0",
         "ts-loader": "^3.5.0",
         "typescript": "^2.8.3",
         "webpack": "^3.10.0",
@@ -17,5 +20,8 @@
         "build": "webpack --progress",
         "start:dev": "webpack-dev-server --hot"
     },
-    "dependencies": {}
+    "dependencies": {
+        "jquery": "^3.3.1",
+        "spectrum-colorpicker": "^1.8.0"
+    }
 }
