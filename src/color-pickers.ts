@@ -37,9 +37,8 @@ export default {
         while(pickers.length > colors.length) {
             const removedPicker = pickers.pop();
             if(removedPicker != undefined) {
-                const container = removedPicker.spectrum('container');
                 removedPicker.spectrum('destroy');
-                $(container).remove();
+                removedPicker.remove();
             }
         }
 

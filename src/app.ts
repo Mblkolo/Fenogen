@@ -4,6 +4,7 @@ import * as $ from "jquery"
 
 
 import colorpickers from "./color-pickers"
+import { isNullOrUndefined } from 'util';
 
 
 
@@ -29,28 +30,35 @@ window.onload = () => {
     let g = new Generator(13, 10);
     let r = new EditorRender(g, context);
     const pr = new PreviewRender(g, context);
-    r.draw();
 
-    //context.translate(-0.5, -0.5);
-    context.translate(400, 0);
-    pr.draw();
-    context.translate(-400, 0);
+    draw();
 
-    const offset = $(el).offset();
-    if(offset === undefined)
-        return;
-    
-    colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0})
     colorpickers.setSelectColorCallback((position, color) => {
         g.setThreadColor(position, color);
 
-        r.draw();
-        context.translate(400, 0);
-        pr.draw();
-        context.translate(-400, 0);
-
-        colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0})
+        draw();
     });
+
+    $('#remove-thread').click(() => {
+        g.removeThread();
+        draw();
+    });
+
+    $('#add-thread').click(() => {
+        g.addThread();
+        draw();
+    });
+
+    $('#add-hub-row').click(() => {
+        g.addHubRow();
+        draw();
+    });
+
+    $('#remove-hub-row').click(() => {
+        g.removeHubRow();
+        draw();
+    });
+
 
     el.addEventListener('click', (e) => {
         console.log({offsetX: e.offsetX, step: r.step});
@@ -64,13 +72,26 @@ window.onload = () => {
 
         if(hub.x < g.width && hub.y < g.height) {
             g.nextHubType(hub.x, hub.y);
-            r.draw();
-
-            context.translate(400, 0);
-            pr.draw();
-            context.translate(-400, 0);
+            draw()
         }
     })
+
+    function draw() {
+        if(context == null)
+            return;
+
+        r.draw();
+        context.translate(400, 0);
+        pr.draw();
+        context.translate(-400, 0);
+
+        const offset = $(el).offset();
+        if(offset === undefined)
+            return;
+
+        colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0})
+    }
+
 };
 
 

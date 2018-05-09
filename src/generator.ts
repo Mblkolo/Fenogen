@@ -67,6 +67,68 @@ export class Generator {
         this.recalculateThreadColors();
     }
 
+    removeThread() {
+        if(this.width > 1)
+        {
+            this.width--;
+            this._threadField.forEach(row => {
+                row.pop();
+            });
+            this._hubsField.forEach(row => {
+                row.pop();
+            });
+
+            this.recalculateThreadColors();
+        }
+    }
+
+    addThread() {
+        this.width++;
+        this._threadField.forEach(row => {
+            row.push("#ffffff");
+        });
+        this._hubsField.forEach((row, index) => {
+            row.push(this.getNewHub(index, row.length));
+        });
+
+        this.recalculateThreadColors();
+    }
+
+    addHubRow() {
+        this.height += 2;
+        for (let y = this.height-2; y < this.height; ++y) {
+            this._hubsField.push([]);
+            for (let x = 0; x < this.width; ++x) {
+                this._hubsField[y].push(this.getNewHub(y, x));
+            }
+        }
+
+        for (let y = 0; y < 2; ++y) {
+            const newRow = [];
+            for (let x = 0; x < this.width + 1; ++x) {
+                newRow.push("#ffffff");
+            }
+            this._threadField.push(newRow);
+        }
+
+        this.recalculateThreadColors();
+    }
+
+    removeHubRow() {
+        if(this.height > 2) {
+            this.height -= 2;
+            
+            this._hubsField.pop();
+            this._hubsField.pop();
+
+            this._threadField.pop();
+            this._threadField.pop();
+
+            this.recalculateThreadColors();
+        }
+    }
+    
+
     private _hubsField: HubType[][] = [];
     private _threadField: string[][] = [];
 
@@ -87,8 +149,7 @@ export class Generator {
         for (let y = 0; y < this.height; ++y) {
             this._hubsField.push([]);
             for (let x = 0; x < this.width; ++x) {
-                const isNone = (x + y) % 2 == 1;
-                this._hubsField[y].push(isNone ? HubType.None : getRandom(hubTypes));
+                this._hubsField[y].push(this.getNewHub(y, x));
             }
         }
 
@@ -100,6 +161,11 @@ export class Generator {
                 this._threadField[y].push( getRandom(colors));
             }
         }
+    }
+
+    private getNewHub(row: number, no: number) {
+        const isNone = (row + no) % 2 == 1;
+        return (isNone ? HubType.None : HubType.LL);
     }
 
     private recalculateThreadColors()
