@@ -2,16 +2,18 @@
 import {EditorRender, PreviewRender} from './render';
 import * as $ from "jquery"
 
-require("spectrum-colorpicker")
-import "spectrum-colorpicker/spectrum.css";
+
+import colorpickers from "./color-pickers"
 
 
 
 window.onload = () => {
     
-    $("#colorpicker").spectrum({
-        color: "#f00"
-    });
+    // $("#colorpicker").spectrum({
+    //     color: "#f00"
+    // });
+
+    // $("#colorpicker").offset({left: 100, top: 100});
 
     const el  = document.getElementById("pane") as HTMLCanvasElement;
     const context = el.getContext("2d");
@@ -33,7 +35,12 @@ window.onload = () => {
     context.translate(400, 0);
     pr.draw();
     context.translate(-400, 0);
+
+    const offset = $(el).offset();
+    if(offset === undefined)
+        return;
     
+    colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0})
 
     el.addEventListener('click', (e) => {
         console.log({offsetX: e.offsetX, step: r.step});

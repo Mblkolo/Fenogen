@@ -50,6 +50,10 @@ export class Generator {
         this.recalculateThreadColors();
     }
 
+    getColors(): string[] {
+        return this._threadField[0];
+    }
+
     //Размеры задаются в хабах
     constructor(width: number, heigth: number) {
         this.width = width;
