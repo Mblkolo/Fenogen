@@ -41,6 +41,16 @@ window.onload = () => {
         return;
     
     colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0})
+    colorpickers.setSelectColorCallback((position, color) => {
+        g.setThreadColor(position, color);
+
+        r.draw();
+        context.translate(400, 0);
+        pr.draw();
+        context.translate(-400, 0);
+
+        colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0})
+    });
 
     el.addEventListener('click', (e) => {
         console.log({offsetX: e.offsetX, step: r.step});

@@ -54,6 +54,11 @@ export class Generator {
         return this._threadField[0];
     }
 
+    setThreadColor(threadNo: number, color: string) {
+        this._threadField[0][threadNo] = color;
+        this.recalculateThreadColors();
+    }
+
     //Размеры задаются в хабах
     constructor(width: number, heigth: number) {
         this.width = width;
@@ -87,7 +92,7 @@ export class Generator {
             }
         }
 
-        const colors = ['#fff', '#0ff', '#f0f', '#ff0', '#00f', '#f00']
+        const colors = ['#ffffff', '#00ffff', '#ff00ff', '#ffff00', '#0000ff', '#ff0000']
 
         for (let y = 0; y < this.height + 1; ++y) {
             this._threadField.push([]);

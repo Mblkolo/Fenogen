@@ -2,14 +2,19 @@ import "spectrum-colorpicker";
 import "spectrum-colorpicker/spectrum.css";
 import {Point} from './geometry';
 import * as $ from 'jquery'
+import { Z_VERSION_ERROR } from "zlib";
 
 const pickers: JQuery<HTMLElement>[] = [];
 
-
+type change = (position: number, color: string) => void;
+let changeColorcallback: change;
 
 export default {
     refreshPickers(colors: string[], stratwith: Point, step: Point) {
-        while(pickers.length < colors.length) {
+        for (let i = 0; i < colors.length; i++) {
+            if(pickers.length > i)
+                continue;
+            
             const newPicker = $(`<div class="picker-handler"></div>`).appendTo('#colorpickers').spectrum({
                 color: "#f00",
                 showInitial: true,
@@ -18,11 +23,17 @@ export default {
                 preferredFormat: "hex",  
                 showPalette: true,
                 showSelectionPalette: false,
-                palette: []
+                palette: [],
+                change: function(color: TinyColor) {
+                    console.log(color.toHexString(), i);
+                    changeColorcallback(i, color.toHexString());
+                }
             });
 
             pickers.push(newPicker);
+            
         }
+
         while(pickers.length > colors.length) {
             const removedPicker = pickers.pop();
             if(removedPicker != undefined) {
@@ -56,5 +67,8 @@ export default {
             position.x += step.x;
             position.y += step.y;
         }
+    },
+    setSelectColorCallback(callback: change){
+        changeColorcallback = callback;
     }
 }
