@@ -1,5 +1,6 @@
 ﻿import {Generator, HubType, GeneratorState } from './generator'
 import {EditorRender, PreviewRender} from './render';
+import Serializer from './stateSerializator';
 import * as $ from "jquery"
 
 
@@ -98,8 +99,8 @@ window.onload = () => {
         colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0});
 
         const state = g.getState();
-        const stringState = JSON.stringify(state);
-        window.location.hash = stringState;
+        const stringState = Serializer.Serialize(state);
+        window.location.hash =  stringState;
     }
 
 };
