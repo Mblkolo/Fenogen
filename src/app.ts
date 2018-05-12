@@ -1,4 +1,4 @@
-﻿import {Generator, HubType } from './generator'
+﻿import {Generator, HubType, GeneratorState } from './generator'
 import {EditorRender, PreviewRender} from './render';
 import * as $ from "jquery"
 
@@ -10,12 +10,6 @@ import { isNullOrUndefined } from 'util';
 
 window.onload = () => {
     
-    // $("#colorpicker").spectrum({
-    //     color: "#f00"
-    // });
-
-    // $("#colorpicker").offset({left: 100, top: 100});
-
     const el  = document.getElementById("pane") as HTMLCanvasElement;
     const context = el.getContext("2d");
     if(context === null)
@@ -28,6 +22,18 @@ window.onload = () => {
     context.strokeRect(0, 0, width, height);
 
     let g = new Generator(13, 10);
+
+    const hash = window.location.hash;
+    if(hash.indexOf('#') === 0) {
+        const state: GeneratorState = JSON.parse(decodeURIComponent(hash.slice(1)));
+        g = new Generator(state.width, state.height);
+        state.colors.forEach((color, index) => g.setThreadColor(index, color))
+        state.hubs.forEach((row, rowIndex) => {
+            row.forEach((hubType, hubNo) => g.setHubType(hubNo, rowIndex, hubType ))
+        });
+    }
+
+
     let r = new EditorRender(g, context);
     const pr = new PreviewRender(g, context);
 
@@ -89,10 +95,16 @@ window.onload = () => {
         if(offset === undefined)
             return;
 
-        colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0})
+        colorpickers.refreshPickers(g.getColors(), {x: offset.left, y: 0}, {x: r.step, y: 0});
+
+        const state = g.getState();
+        const stringState = JSON.stringify(state);
+        window.location.hash = stringState;
     }
 
 };
+
+
 
 
 

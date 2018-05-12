@@ -16,7 +16,7 @@ export class PreviewRender {
 
     draw() {
         const ctx = this._context;
-        ctx.lineWidth =0.5;
+        ctx.lineWidth = 0.5;
 
         const  preview = this._generator.getHubPreview(30);
         for(let rowNo=0; rowNo<preview.length; ++ rowNo) {

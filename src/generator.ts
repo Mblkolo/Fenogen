@@ -128,6 +128,14 @@ export class Generator {
         }
     }
     
+    public getState() : GeneratorState {
+        return {
+            width: this.width,
+            height: this.height,
+            colors: [...this._threadField[0]],
+            hubs: this._hubsField.map(x => [...x])
+        }
+    }
 
     private _hubsField: HubType[][] = [];
     private _threadField: string[][] = [];
@@ -175,9 +183,6 @@ export class Generator {
             const threadRow = this._threadField[y-1];
 
             this._threadField[y] = Generator.getNextThreadRow(threadRow, hubRow);
-            // for (let x = 0; x < this.width + 1; ++x) {
-            //     this._threadField[y][x] = Generator.getParentColor(threadRow, hubRow, x);
-            // }
         }
     }
 
@@ -242,4 +247,11 @@ export class Generator {
 function getRandom<T>(data: T[])
 {
     return data[Math.floor(Math.random()*data.length)] 
+}
+
+export interface GeneratorState {
+    width: number,
+    height: number,
+    colors: string[],
+    hubs: HubType[][]
 }
