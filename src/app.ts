@@ -26,9 +26,11 @@ window.onload = () => {
 
     const hash = window.location.hash;
     if(hash.indexOf('#') === 0) {
-        const state: GeneratorState = JSON.parse(decodeURIComponent(hash.slice(1)));
+        const state: GeneratorState = Serializer.Deserialize(decodeURIComponent(hash.slice(1)));
         g = new Generator(state.width, state.height);
         state.colors.forEach((color, index) => g.setThreadColor(index, color))
+
+        //TODO использовать более производительный метод
         state.hubs.forEach((row, rowIndex) => {
             row.forEach((hubType, hubNo) => g.setHubType(hubNo, rowIndex, hubType ))
         });

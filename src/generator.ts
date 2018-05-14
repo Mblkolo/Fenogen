@@ -30,6 +30,7 @@ export class Generator {
     setHubType(x: number, y: number, hubType: HubType) {
         this._validateHubPositon(x, y);
         this._hubsField[y][x] = hubType;
+        this.recalculateThreadColors();
     }
 
     getThreadNo(x: number, y: number): string {
